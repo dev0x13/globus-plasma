@@ -1,6 +1,7 @@
 #include <kaldi/util/parse-options.h>
 
 #include <iostream>
+#include <util/sht-reader.h>
 
 int main(int argc, char *argv[]) {
     try {
@@ -19,10 +20,12 @@ int main(int argc, char *argv[]) {
 
         po.Read(argc, argv);
 
-        if (po.NumArgs() != 2) {
+        if (po.NumArgs() != 1) {
             po.PrintUsage();
             exit(1);
         }
+
+        globus::ShtReader(po.GetArg(1));
 
     } catch(const std::exception &e) {
         std::cerr << e.what();

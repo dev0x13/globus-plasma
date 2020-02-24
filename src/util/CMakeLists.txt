@@ -1,0 +1,1 @@
+add_library(globus-util STATIC sht-reader.cpp)
