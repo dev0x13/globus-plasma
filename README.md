@@ -18,4 +18,7 @@ Globus employs a small part of [Kaldi](https://github.com/kaldi-asr/kaldi) toolk
 changes (removed typedefs for numbers, changed headers paths) for logging, errors handling and
 program arguments parsing. The decision to use part of Kaldi code was made due to its high quality
 and simplicity. Also the Globus toolkit structure is similar to Kaldi one, so if you are familiar 
-with Kaldi, you won't face any problems diving into Globus. 
+with Kaldi, you won't face any problems diving into Globus.
+
+Globus provides a Python wrapper created with [pybind11](https://github.com/pybind/pybind11). Wrapper
+source code and basic examples can be found at `src/python` folder.
