@@ -73,6 +73,8 @@ class ParseOptions : public OptionsItf {
 
   // Methods from the interface
   void Register(const std::string &name,
+                size_t *ptr, const std::string &doc);
+  void Register(const std::string &name,
                 bool *ptr, const std::string &doc);
   void Register(const std::string &name,
                 int32_t *ptr, const std::string &doc);
@@ -144,6 +146,9 @@ class ParseOptions : public OptionsItf {
   /// Register boolean variable
   void RegisterSpecific(const std::string &name, const std::string &idx,
                         bool *b, const std::string &doc, bool is_standard);
+  /// Register size_t variable
+  void RegisterSpecific(const std::string &name, const std::string &idx,
+                        size_t *b, const std::string &doc, bool is_standard);
   /// Register int32 variable
   void RegisterSpecific(const std::string &name, const std::string &idx,
                         int32_t *i, const std::string &doc, bool is_standard);
@@ -185,6 +190,7 @@ class ParseOptions : public OptionsItf {
   std::map<std::string, bool*> bool_map_;
   std::map<std::string, int32_t*> int_map_;
   std::map<std::string, uint32_t*> uint_map_;
+  std::map<std::string, size_t*> size_t_map_;
   std::map<std::string, float*> float_map_;
   std::map<std::string, double*> double_map_;
   std::map<std::string, std::string*> string_map_;

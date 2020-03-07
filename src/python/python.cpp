@@ -14,6 +14,7 @@ PYBIND11_MODULE(pyglobus, m) {
             .def(py::init<const std::string &>())
             .def("get_signal", (ShtSignal (ShtReader::*)(const std::string& signalName)) &ShtReader::getSignal)
             .def("get_signal", (ShtSignal (ShtReader::*)(int32_t numSignal)) &ShtReader::getSignal)
+            .def("get_signal_name", &ShtReader::getSignalName)
             .def("get_num_signals", &ShtReader::getNumSignals)
             .def("get_all_signals", &ShtReader::getAllSignals);
 
@@ -45,5 +46,15 @@ PYBIND11_MODULE(pyglobus, m) {
                     { sizeof(uint8_t) },
                     m.data
                  );
+            })
+            .def("get_data_x", [](ShtSignal& m) -> py::array_t<float> {
+                auto v = new std::vector<float>(m.getDataX());
+                auto capsule = py::capsule(v, [](void *v) { delete reinterpret_cast<std::vector<int>*>(v); });
+                return py::array(v->size(), v->data(), capsule);
+            })
+            .def("get_data_y", [](ShtSignal& m) -> py::array_t<float> {
+                auto v = new std::vector<float>(m.getDataY());
+                auto capsule = py::capsule(v, [](void *v) { delete reinterpret_cast<std::vector<int>*>(v); });
+                return py::array(v->size(), v->data(), capsule);
             });
 }

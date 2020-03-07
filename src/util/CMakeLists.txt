@@ -1,4 +1,4 @@
-add_library(globus-util STATIC sht-reader.cpp compress.cpp)
+add_library(globus-util STATIC sht-reader.cpp compress.cpp text-utils.cpp)
 target_link_libraries(globus-util INTERFACE kaldi-base)
 
 add_executable(sht-reader-test sht-reader-test.cpp)

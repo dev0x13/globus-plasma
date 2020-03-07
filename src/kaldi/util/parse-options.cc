@@ -53,6 +53,11 @@ ParseOptions::ParseOptions(const std::string &prefix,
 }
 
 void ParseOptions::Register(const std::string &name,
+                            size_t *ptr, const std::string &doc) {
+  RegisterTmpl(name, ptr, doc);
+}
+
+void ParseOptions::Register(const std::string &name,
                             bool *ptr, const std::string &doc) {
   RegisterTmpl(name, ptr, doc);
 }
@@ -124,6 +129,17 @@ void ParseOptions::RegisterSpecific(const std::string &name,
   bool_map_[idx] = b;
   doc_map_[idx] = DocInfo(name, doc + " (bool, default = "
                           + ((*b)? "true)" : "false)"), is_standard);
+}
+
+void ParseOptions::RegisterSpecific(const std::string &name,
+                                    const std::string &idx,
+                                    size_t *u,
+                                    const std::string &doc,
+                                    bool is_standard) {
+  size_t_map_[idx] = u;
+  std::ostringstream ss;
+  ss << doc << " (size_t, default = " << *u << ")";
+  doc_map_[idx] = DocInfo(name, ss.str(), is_standard);
 }
 
 void ParseOptions::RegisterSpecific(const std::string &name,

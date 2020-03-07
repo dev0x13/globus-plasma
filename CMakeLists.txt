@@ -3,8 +3,10 @@ project(globus-plasma)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -Wall -Wextra -Wno-return-type -fPIC")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -Wall -Wextra -fPIC -Werror=return-type")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
+
+# Add -DNDEBUG to suppress logging messages
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
 
 if(NOT CMAKE_BUILD_TYPE)

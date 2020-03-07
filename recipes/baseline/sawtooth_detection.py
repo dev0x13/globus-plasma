@@ -88,6 +88,8 @@ def smoothed_dd1(input_, order):
     return output
 
 
+import sys
+
 if __name__ == "__main__":
     font = {"size": 22}
 
@@ -97,7 +99,7 @@ if __name__ == "__main__":
 
     print("Stage %i: Data loading" % stage)
 
-    data = np.load(os.path.join(current_dir, "..", "sample_data", DATA_FILE))
+    data = np.load(os.path.join(current_dir, "sample_data", DATA_FILE))
 
     print("Loaded %s" % DATA_FILE)
 
@@ -106,6 +108,9 @@ if __name__ == "__main__":
     print("Stage %i: ROI extracting" % stage)
 
     roi = get_roi(data[1], mean_scale=1)
+
+    print(roi)
+
     x = data[0, roi[0]:roi[1]]
     y = data[1, roi[0]:roi[1]]
 
@@ -115,13 +120,23 @@ if __name__ == "__main__":
 
     sample_rate = 1.0 / (x[1] - x[0])
 
+    print(sample_rate)
+
+    print(y[:10])
+
     y = butter_filter(y, HIGH_PASS_CUTOFF, sample_rate, btype="high")
+
+    print(y[:10])
 
     plot(x, y, "Время, с", "U, В")
 
     print("Stage %i: Smoothed differentiation" % stage)
 
     y = smoothed_dd1(y, SMOOTHED_DD1_ORDER)
+
+    print(y)
+
+    sys.exit()
 
     plot(x, y, "Время, с", "U', В/с")
 

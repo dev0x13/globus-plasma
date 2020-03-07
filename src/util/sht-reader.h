@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 
 #include "kaldi/base/kaldi-error.h"
 
@@ -42,7 +43,7 @@ namespace globus {
         double delta = 0;
 
         // At the moment user is responsible for handling real data type
-        // (i.e. casting this pointer to int32_t and double)
+        // (i.e. casting this pointer to int32_t or double)
         uint8_t *data = nullptr;
         size_t dataSize = 0;
 
@@ -88,6 +89,79 @@ namespace globus {
             delete[] data;
         }
 
+        std::vector<float> getDataX() const {
+            std::vector<float> result;
+
+            int32_t* castedData = reinterpret_cast<int32_t*>(data);
+
+            switch (type) {
+                case 0:
+                    float tMult;
+                    tMult = (float) (tMax - tMin) / (numChannels - 1);
+
+                    result.resize(dataSize / sizeof(int32_t));
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = i * tMult + tMin;
+                    }
+
+                    return result;
+                case 1:
+                    result.resize(dataSize / sizeof(int32_t) / 2);
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = castedData[i * 2];
+                    }
+
+                    return result;
+                case 2:
+                    result.resize(dataSize / sizeof(int32_t) / 3);
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = castedData[i * 3];
+                    }
+
+                    return result;
+                default:
+                    KALDI_ERR << "Unsupported type";
+            }
+        }
+
+        std::vector<float> getDataY() const {
+            std::vector<float> result;
+
+            int32_t* castedData = reinterpret_cast<int32_t*>(data);
+
+            switch (type) {
+                case 0:
+                    result.resize(dataSize / sizeof(int32_t));
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = (float) castedData[i] * delta + uMin;
+                    }
+
+                    return result;
+                case 1:
+                    result.resize(dataSize / sizeof(int32_t) / 2);
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = castedData[i * 2 + 1];
+                    }
+
+                    return result;
+                case 2:
+                    result.resize(dataSize / sizeof(int32_t) / 3);
+
+                    for (size_t i = 0; i < result.size(); ++i) {
+                        result[i] = castedData[i * 3 + 1];
+                    }
+
+                    return result;
+                default:
+                    KALDI_ERR << "Unsupported type";
+            }
+        }
+
         // TODO: operator<<
     };
 
@@ -97,11 +171,14 @@ namespace globus {
 
         // Leave this unimplemented for now
         ShtSignal getSignal(const std::string& signalName) {
-            throw std::logic_error("Not implemented");
+            return getSignal(signalsNamesMap[signalName]);
         }
 
         // Reads and returns #numSignal signal from SHT
         ShtSignal getSignal(int32_t numSignal);
+
+        // Reads and returns #numSignal signal name from SHT
+        std::string getSignalName(int32_t numSignal);
 
         // Returns total number of signals presented in SHT
         const int32_t& getNumSignals() const;
@@ -117,6 +194,11 @@ namespace globus {
 
         size_t version;
         int32_t numSignals;
+
+        // For getSignal(const std::string& signalName)
+        std::unordered_map<std::string, size_t> signalsNamesMap;
+        // For getSignalName(int32_t numSignal)
+        std::vector<std::string> signalsNamesVector;
 
         std::vector<size_t> signalsOffsets;
         std::vector<int32_t> signalsSizes;

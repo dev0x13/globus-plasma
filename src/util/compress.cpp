@@ -17,7 +17,8 @@ namespace globus_internal {
         int32_t parent;
     };
 
-    uint8_t* decompressRLE(uint8_t* inbuff, int32_t sizeIn, int32_t& sizeOut) noexcept {
+    // Pass decompressingBytesLimit to decompress only few first bytes
+    uint8_t* decompressRLE(const uint8_t* inbuff, int32_t sizeIn, int32_t& sizeOut) noexcept {
         int32_t i = 0;
         int32_t numBytes = 0;
         int32_t delta;
@@ -135,10 +136,18 @@ namespace globus_internal {
         return true;
     }
 
-    uint8_t* decompressHuffman(uint8_t *inbuff, int32_t sizeIn, int32_t& sizeOut) noexcept {
+    // Pass decompressingBytesLimit to decompress only few first bytes
+    uint8_t* decompressHuffman(uint8_t *inbuff, int32_t sizeIn, int32_t& sizeOut, int32_t decompressingBytesLimit = -1) noexcept {
         int32_t index = 0;
         Graph graph[256], *pGraph;
-        sizeOut = *reinterpret_cast<int32_t*>(inbuff + 511);
+
+        if (decompressingBytesLimit != -1) {
+            sizeOut = decompressingBytesLimit;
+        } else {
+            KALDI_ASSERT(sizeIn >= 512);
+            sizeOut = *reinterpret_cast<int32_t *>(inbuff + 511);
+        }
+
         uint8_t *outBuff = new uint8_t[sizeOut];
 
         if (!createGraph(inbuff, graph)) {
@@ -202,6 +211,8 @@ namespace globus_internal {
     }
 
     Histogram* Histogram::decompress(uint8_t* H, int32_t size) {
+        KALDI_ASSERT(H);
+
         int32_t size0, size1;
 
         uint8_t* h1 = decompressHuffman(H, size, size1);
@@ -216,5 +227,25 @@ namespace globus_internal {
         changeByteOrder(reinterpret_cast<uint8_t *>(&h2->data), h2->getDataSize(), 4, false);
 
         return h2;
+    }
+
+    std::string Histogram::decompressName(uint8_t* H) {
+        KALDI_ASSERT(H);
+
+        static const constexpr size_t typeAndNameLengthBytes = sizeof(int32_t) + stringFieldsLength;
+
+        int32_t size0, size1;
+
+        uint8_t* h1 = decompressHuffman(H, 0, size1, typeAndNameLengthBytes);
+
+        KALDI_ASSERT(h1);
+
+        uint8_t* h2 = decompressRLE(h1, typeAndNameLengthBytes, size0);
+
+        KALDI_ASSERT(h2);
+
+        delete[] h1;
+
+        return std::string(h2 + sizeof(int32_t), h2 + typeAndNameLengthBytes);
     }
 }

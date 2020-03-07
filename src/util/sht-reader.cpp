@@ -36,16 +36,29 @@ ShtReader::ShtReader(const std::string& filePath) {
 
     f.read(reinterpret_cast<char*>(&numSignals), sizeof(numSignals));
 
-    KALDI_LOG << "Found " << numSignals << " signals";
-
     // 2. Read signals meta
 
     signalsOffsets.resize(numSignals);
     signalsSizes.resize(numSignals);
+    signalsNamesVector.resize(numSignals);
+
+    char signalNameBuf[globus_internal::Histogram::headerLength];
 
     for (size_t i = 0; i < (size_t) numSignals; ++i) {
+        // Read signal size
+
         f.read(reinterpret_cast<char*>(&signalsSizes[i]), sizeof(signalsSizes[i]));
         signalsOffsets[i] = f.tellg();
+
+        // Read signal name
+
+        f.seekg(signalsOffsets[i]);
+        f.read(signalNameBuf, globus_internal::Histogram::headerLength);
+        const std::string signalName = globus_internal::Histogram::decompressName(reinterpret_cast<uint8_t*>(signalNameBuf));
+        signalsNamesMap[signalName] = i;
+        signalsNamesVector[i] = signalName;
+        f.seekg(signalsOffsets[i]);
+
         f.seekg(signalsSizes[i], std::ios_base::cur);
     }
 }
@@ -101,4 +114,10 @@ std::vector<ShtSignal> ShtReader::getAllSignals() {
     }
 
     return result;
+}
+
+std::string ShtReader::getSignalName(int32_t numSignal) {
+    KALDI_ASSERT(numSignal >= 0 && numSignal < numSignals);
+
+    return signalsNamesVector[numSignal];
 }
