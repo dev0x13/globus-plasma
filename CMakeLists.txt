@@ -1,13 +1,24 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 project(globus-plasma)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -Wall -Wextra -fPIC -Werror=return-type")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+option (use_python "Build Python wrapper"      ON)
+option (use_debug  "Build with debug messages" ON)
 
-# Add -DNDEBUG to suppress logging messages
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+if (UNIX)
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -Wall -Wextra -fPIC -Werror=return-type")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+    if (NOT use_debug)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DNDEBUG")
+    endif()
+elseif(MSVC)
+   if (NOT use_debug)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DNDEBUG")
+    endif()
+endif()
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -15,6 +26,8 @@ endif()
 
 include_directories(src/)
 
-add_subdirectory(libs/pybind11)
+if (use_python)
+    add_subdirectory(libs/pybind11)
+endif()
 
 add_subdirectory(src/)

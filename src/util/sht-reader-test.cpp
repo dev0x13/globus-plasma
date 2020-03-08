@@ -42,5 +42,7 @@ int main() {
 
     shtReader.getAllSignals();
 
+    KALDI_LOG << "OK!";
+
     return 0;
 }

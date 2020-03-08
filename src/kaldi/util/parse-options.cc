@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <cctype>
 
 #include "kaldi/util/parse-options.h"
 #include "kaldi/util/text-utils.h"

@@ -27,6 +27,7 @@
 #include <unistd.h>
 #endif
 
+#include <cctype>
 #include <string>
 
 namespace kaldi {
