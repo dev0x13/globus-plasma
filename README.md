@@ -51,6 +51,6 @@ Available CMake options:
 - If you are using chocolatey, then just install Visual Studio requirements: `choco install visualstudio2017community visualstudio2017-workload-vctools`
 
 - Build process is the following:
-    * Create build directory: `mkdir _build && cd _build`
+    * Create build directory: `mkdir _build ; cd _build`
     * Run CMake: `cmake [cmake options] ..`. If you are on x64 platform, you should specify x64 architecture explicitly for cmake: `cmake -A x64 [cmake options] ..`
     * Build: `cmake --build . --target install`
