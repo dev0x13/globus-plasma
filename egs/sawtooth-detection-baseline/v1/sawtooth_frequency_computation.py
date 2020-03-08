@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     print("Stage %i: Data loading and preparing" % stage)
 
-    data = np.load(os.path.join(current_dir, "..", "sample_data", DATA_FILE))
+    data = np.load(os.path.join(current_dir, "sample_data", DATA_FILE))
 
     print("Loaded %s" % DATA_FILE)
 

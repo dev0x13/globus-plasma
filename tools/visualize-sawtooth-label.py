@@ -1,10 +1,11 @@
 #!/usr/bin/python3.6
 
 import numpy as np
-import pyglobus
 import csv
 import argparse
 import matplotlib.pyplot as plt
+import sys
+import os
 
 ####################################
 # Sawtooth crash labels visualizer #
@@ -19,6 +20,12 @@ if __name__ == "__main__":
                         help="path to output directory (will be created if not exists)")
 
     args = parser.parse_args()
+
+    from base import get_globus_version
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(os.path.join(current_dir, "..", "_stage-%s" % get_globus_version(), "python"))
+
+    import pyglobus
 
     sht_reader = pyglobus.ShtReader(args.sht_file)
 

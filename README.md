@@ -18,7 +18,8 @@ Globus employs a small part of [Kaldi](https://github.com/kaldi-asr/kaldi) toolk
 changes (removed typedefs for numbers, changed headers paths) for logging, errors handling and
 program arguments parsing. The decision to use part of Kaldi code was made due to its high quality
 and simplicity. Also the Globus toolkit structure is similar to Kaldi one, so if you are familiar 
-with Kaldi, you won't face any problems diving into Globus.
+with Kaldi, you won't face any problems diving into Globus. **Please note that Globus is licensed under
+MIT license, but Kaldi code used in the project is licensed under Apache 2.0.**
 
 Globus provides a Python wrapper created with [pybind11](https://github.com/pybind/pybind11). Wrapper
 source code and basic examples can be found at `src/python` folder.
@@ -39,7 +40,7 @@ Available CMake options:
 - Build process is the following:
     * Create build directory: `mkdir _build && cd _build`
     * Run CMake: `cmake [cmake options] ..`
-    * Build: `cmake --build .` or `make`
+    * Build: `cmake --build . --target install` or `make && make install`
 
 ### Windows
 
@@ -52,4 +53,4 @@ Available CMake options:
 - Build process is the following:
     * Create build directory: `mkdir _build && cd _build`
     * Run CMake: `cmake [cmake options] ..`. If you are on x64 platform, you should specify x64 architecture explicitly for cmake: `cmake -A x64 [cmake options] ..`
-    * Build: `cmake --build .`
+    * Build: `cmake --build . --target install`
