@@ -22,3 +22,34 @@ with Kaldi, you won't face any problems diving into Globus.
 
 Globus provides a Python wrapper created with [pybind11](https://github.com/pybind/pybind11). Wrapper
 source code and basic examples can be found at `src/python` folder.
+
+Building
+--------
+
+Available CMake options:
+
+- `use_python` - specifying building Python wrapper or not
+- `use_debug` - sepcifying outputing debug messages or not
+
+### Linux
+
+- Globus is expected to work out of the box in Ubuntu >= 16.04 with installed CMake >= 3.12 and Python >= 2.7
+  (only if you are going to use Python wrapper).
+- The easiest way to install stable CMake version is via pip: `pip install cmake`
+- Build process is the following:
+    * Create build directory: `mkdir _build && cd _build`
+    * Run CMake: `cmake [cmake options] ..`
+    * Build: `cmake --build .` or `make`
+
+### Windows
+
+- Globus build and running were teset on Windows 10 with Visual Studio 2017, but most likely at this stage of
+  delopment it will work on any Visual Studio versions higher than 2017.
+- It is recommended to use [chocolatey](https://chocolatey.org/) to install building dependencies.
+- The easiest way to install stable CMake version is via pip: `pip install cmake`
+- If you are using chocolatey, then just install Visual Studio requirements: `choco install visualstudio2017community visualstudio2017-workload-vctools`
+
+- Build process is the following:
+    * Create build directory: `mkdir _build && cd _build`
+    * Run CMake: `cmake [cmake options] ..`. If you are on x64 platform, you should specify x64 architecture explicitly for cmake: `cmake -A x64 [cmake options] ..`
+    * Build: `cmake --build .`
