@@ -227,7 +227,7 @@ void MessageLogger::LogMessage() const {
 
 void KaldiAssertFailure_(const char *func, const char *file, int32_t line,
                          const char *cond_str) {
-  MessageLogger::Log() =
+  MessageLogger::LogAndThrow() =
       MessageLogger(LogMessageEnvelope::kAssertFailed, func, file, line)
       << "Assertion failed: (" << cond_str << ")";
   fflush(NULL); // Flush all pending buffers, abort() may not flush stderr.

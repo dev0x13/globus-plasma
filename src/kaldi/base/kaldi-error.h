@@ -92,7 +92,7 @@ public:
 
   /// Returns the exception name, "kaldi::KaldiFatalError".
   virtual const char *what() const noexcept override {
-    return "kaldi::KaldiFatalError";
+    return std::runtime_error::what();
   }
 
   /// Returns the Kaldi error message logged by KALDI_ERR.
