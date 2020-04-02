@@ -4,6 +4,7 @@
 #include <util/csv-writer.h>
 #include <dsp/filter.h>
 #include <dsp/basic.h>
+#include <sawtooth/sawtooth-functions.h>
 
 #include <iostream>
 
@@ -31,52 +32,6 @@ std::vector<int32_t> prepareSignalsNumbers(const std::string& signalsStr) {
     } else {
         return globus::splitStringToNumbers<int32_t>(signalsStr, ",");
     }
-}
-
-// Returns signal ROI start and end indexes
-std::pair<size_t, size_t> getSignalRoi(const float* signal, size_t signalSize, float meanScale = 0.96) {
-    float threshold = meanScale * globus::mean(signal, signalSize);
-
-    size_t startIndex = 0;
-    size_t endIndex   = 0;
-
-    for (size_t i = 0; i < signalSize; ++i) {
-        if (signal[i] > threshold) {
-            startIndex = i;
-            break;
-        }
-    }
-
-    for (size_t i = signalSize - 1; i > 0; --i) {
-        if (signal[i] > threshold) {
-            endIndex = i;
-            break;
-        }
-    }
-
-    return { startIndex, endIndex };
-}
-
-// Applies threshold to processed data and return relative (in ROI domain) indexes of sawtooth start and end
-std::pair<size_t, size_t> getSawtoothIndexes(const float* signal, size_t signalSize, float threshold) {
-    size_t startIndex = 0;
-    size_t endIndex   = 0;
-
-    for (size_t i = 0; i < signalSize; ++i) {
-        if (signal[i] > threshold) {
-            startIndex = i;
-            break;
-        }
-    }
-
-    for (size_t i = signalSize - 1; i > 0; --i) {
-        if (signal[i] > threshold) {
-            endIndex = i;
-            break;
-        }
-    }
-
-    return { startIndex, endIndex };
 }
 
 int main(int argc, char *argv[]) {
@@ -125,7 +80,7 @@ int main(int argc, char *argv[]) {
             // 1. Select ROI
 
             const std::pair<int32_t, int32_t> signalRoiBounds =
-                getSignalRoi(y.data(), y.size(), options.roiDetectorMeanScale);
+                globus::getSignalRoi(y.data(), y.size(), options.roiDetectorMeanScale);
 
             float* signalRoi     = y.data() + signalRoiBounds.first;
             size_t signalRoiSize = signalRoiBounds.second - signalRoiBounds.first;
@@ -161,7 +116,7 @@ int main(int argc, char *argv[]) {
             // 6. Construct sawtooth indexes
 
             const std::pair<size_t, size_t> detection =
-                getSawtoothIndexes(signalRoiFirstDerivative.data(), signalRoiSize, options.sawtoothDetectionThreshold);
+                globus::getSawtoothIndexes(signalRoiFirstDerivative.data(), signalRoiSize, options.sawtoothDetectionThreshold);
 
             if (detection.first == detection.second) {
                 // No detection

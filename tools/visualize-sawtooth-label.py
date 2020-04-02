@@ -12,7 +12,7 @@ import os
 ####################################
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Frozen graph to TFLite graph converter.')
+    parser = argparse.ArgumentParser(description="Sawtooth crash labels visualizer")
 
     parser.add_argument("-i", "--sht-file", dest="sht_file", required=True,
                         help="path to a valid `tgraph.cfg` file")

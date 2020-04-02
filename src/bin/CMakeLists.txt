@@ -3,5 +3,5 @@ target_link_libraries(get-sht-info PRIVATE kaldi-util kaldi-base globus-util)
 install(TARGETS get-sht-info RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 add_executable(detect-sawtooth-baseline detect-sawtooth-baseline.cpp)
-target_link_libraries(detect-sawtooth-baseline PRIVATE kaldi-util kaldi-base globus-util globus-dsp)
+target_link_libraries(detect-sawtooth-baseline PRIVATE kaldi-util kaldi-base globus-util globus-dsp globus-sawtooth)
 install(TARGETS detect-sawtooth-baseline DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
