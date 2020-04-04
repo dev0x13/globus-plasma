@@ -12,12 +12,12 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../../../tools"))
 
 from base import get_globus_version
-pyglobs_root = os.path.join(current_dir, "../../..", "_stage-%s" % get_globus_version(), "python")
-sys.path.append(pyglobs_root)
+pyglobus_root = os.path.join(current_dir, "../../..", "_stage-%s" % get_globus_version(), "python")
+sys.path.append(pyglobus_root)
 try:
     import pyglobus
 except ImportError as e:
-    print("Cannot import pyglobus from %s, exiting" % pyglobs_root)
+    print("Cannot import pyglobus from %s, exiting" % pyglobus_root)
     sys.exit(1)
 
 output_dir = os.path.join(current_dir, "output", "sawtooth_detection")
@@ -79,8 +79,8 @@ if __name__ == "__main__":
     print("Stage %i: ROI extracting" % stage)
 
     roi = pyglobus.sawtooth.get_signal_roi(data[1], mean_scale=1)
-    x = data[0, roi[0]:roi[1]]
-    y = data[1, roi[0]:roi[1]]
+    x = np.copy(data[0, roi[0]:roi[1]])
+    y = np.copy(data[1, roi[0]:roi[1]])
 
     plot(x, y, "Время, с", "U, В")
 
@@ -108,5 +108,14 @@ if __name__ == "__main__":
 
     plot(x, y, "Время, с", "|U'|, В/с", flush=False)
     plot(x, [SAWTOOTH_DETECTION_THRESHOLD] * len(x), "Время, с", "|U'|, В/с", color="r", new_fig=False)
+
+    print("Stage %i: Sawtooth detection" % stage)
+
+    start_ind, end_ind = pyglobus.sawtooth.get_sawtooth_indexes(y, SAWTOOTH_DETECTION_THRESHOLD)
+
+    plt.figure(figsize=(15, 10))
+    plt.axvline(x[start_ind], color="r")
+    plt.axvline(x[end_ind], color="r")
+    plot(data[0], data[1], "Время, с", "U, В", new_fig=False)
 
     print("Done!")

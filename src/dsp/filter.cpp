@@ -17,6 +17,9 @@ namespace globus {
         for (size_t i = 1; i < signalSize; ++i) {
             signal[i] = (float) signal[i - 1] + (alpha * (float) (signal[i] - signal[i - 1]));
         }
+
+        // Fix the first value to conform scale
+        signal[0] = signal[1];
     }
 
     template<typename T>
@@ -33,6 +36,9 @@ namespace globus {
             signal[i] = alpha * (float) (signal[i - 1] + signal[i] - prev);
             prev = tmp;
         }
+
+        // Fix the first value to conform scale
+        signal[0] = signal[1];
     }
 
     template<typename T>
@@ -42,7 +48,7 @@ namespace globus {
         for (size_t i = 0; i < signalSize; ++i) {
             for (size_t j = 1; j < order + 1; ++j) {
                 outputSignal[i] += coeff * (inputSignal[std::min(i + j, signalSize - 1)] -
-                                            inputSignal[std::max(i - j, (size_t) 0)]);
+                                            inputSignal[std::max((int64_t) i - (int64_t) j, (int64_t) 0)]);
             }
         }
     }

@@ -19,6 +19,7 @@ DATA_FILE = "38515_SXR 80 mkm.npy"
 HIGH_PASS_CUTOFF = 400
 SMOOTHED_DD1_ORDER = 30
 LOW_PASS_CUTOFF = 5000
+SAWTOOTH_DETECTION_THRESHOLD = 0.0008
 
 ####################
 # HELPER FUNCTIONS #
@@ -38,6 +39,7 @@ def plot(x, y, label_x, label_y, color="k", new_fig=True, flush=True):
     if flush:
         out = os.path.join(output_dir, "#%i.png" % stage)
         plt.savefig(out)
+        plt.close()
 
         print("Stage %i result:" % stage, out)
 
@@ -70,6 +72,25 @@ def get_roi(y, mean_scale=0.96):
             break
 
     return start_index, end_index
+
+# Applies threshold to processed data and return relative (in ROI domain) indexes of sawtooth start and end
+def get_sawtooth_indexes(y, threshold):
+    start_index = 0
+    end_index = 0
+
+    data_length = y.shape[0]
+
+    for i in range(data_length):
+        if y[i] >= threshold:
+            start_ind = i
+            break
+
+    for i in range(1, data_length):
+        if y[data_length - i] >= threshold:
+            end_index = data_length - i
+            break
+
+    return start_ind, end_index
 
 
 # Computing smoothed first derivative
@@ -115,7 +136,7 @@ if __name__ == "__main__":
 
     sample_rate = 1.0 / (x[1] - x[0])
 
-    y = butter_filter(y, HIGH_PASS_CUTOFF, sample_rate, btype="high")
+    y = butter_filter(y, HIGH_PASS_CUTOFF, sample_rate, btype="highpass")
 
     plot(x, y, "Время, с", "U, В")
 
@@ -136,6 +157,15 @@ if __name__ == "__main__":
     y = butter_filter(y, LOW_PASS_CUTOFF, sample_rate, btype="low")
 
     plot(x, y, "Время, с", "|U'|, В/с", flush=False)
-    plot(x, [0.0005] * len(x), "Время, с", "|U'|, В/с", color="r", new_fig=False)
+    plot(x, [SAWTOOTH_DETECTION_THRESHOLD] * len(x), "Время, с", "|U'|, В/с", color="r", new_fig=False)
+
+    print("Stage %i: Sawtooth detection" % stage)
+
+    start_ind, end_ind = get_sawtooth_indexes(y, SAWTOOTH_DETECTION_THRESHOLD)
+
+    plt.figure(figsize=(15, 10))
+    plt.axvline(x[start_ind], color="r")
+    plt.axvline(x[end_ind], color="r")
+    plot(data[0], data[1], "Время, с", "U, В", new_fig=False)
 
     print("Done!")
