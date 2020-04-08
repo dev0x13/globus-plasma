@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     import pyglobus
 
-    sht_reader = pyglobus.ShtReader(args.sht_file)
+    sht_reader = pyglobus.util.ShtReader(args.sht_file)
 
     with open(args.labels_file, "r") as f:
         reader = csv.reader(f)
