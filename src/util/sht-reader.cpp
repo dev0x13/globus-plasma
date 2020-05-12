@@ -55,7 +55,6 @@ ShtReader::ShtReader(const std::string& filePath) {
         f.seekg(signalsOffsets[i]);
         f.read(signalNameBuf, globus_internal::Histogram::headerLength);
         const std::string signalName = globus_internal::Histogram::decompressName(reinterpret_cast<uint8_t*>(signalNameBuf));
-        signalsNamesMap[signalName] = i;
         signalsNamesVector[i] = signalName;
         f.seekg(signalsOffsets[i]);
 

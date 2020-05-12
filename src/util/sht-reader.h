@@ -169,9 +169,19 @@ namespace globus {
     public:
         explicit ShtReader(const std::string &filePath);
 
-        // Leave this unimplemented for now
-        ShtSignal getSignal(const std::string& signalName) {
-            return getSignal(signalsNamesMap[signalName]);
+        std::vector<ShtSignal> getSignals(const std::string& signalName) {
+            // Unfortunately signal names are not unique. Thus we use
+            // O(N) search to avoid using multimap.
+
+            std::vector<ShtSignal> result;
+
+            for (int32_t i = 0; i < static_cast<int32_t>(signalsNamesVector.size()); ++i) {
+                if (signalsNamesVector[i] == signalName) {
+                    result.emplace_back(getSignal(i));
+                }
+            }
+
+            return result;
         }
 
         // Reads and returns #numSignal signal from SHT
@@ -195,9 +205,8 @@ namespace globus {
         size_t version;
         int32_t numSignals;
 
-        // For getSignal(const std::string& signalName)
-        std::unordered_map<std::string, size_t> signalsNamesMap;
-        // For getSignalName(int32_t numSignal)
+        // For getSignalName(int32_t numSignal) and
+        // getSignal(const std::string& signalName)
         std::vector<std::string> signalsNamesVector;
 
         std::vector<size_t> signalsOffsets;

@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -20,9 +21,13 @@ PYBIND11_MODULE(pyglobus, m) {
 
     py::class_<ShtReader>(util, "ShtReader")
             .def(py::init<const std::string &>())
-            .def("get_signal", (ShtSignal (ShtReader::*)(const std::string& signalName)) &ShtReader::getSignal)
+            .def("get_signals", [](ShtReader& m, const py::bytes& signalName) {
+                return m.getSignals(signalName);
+            })
             .def("get_signal", (ShtSignal (ShtReader::*)(int32_t numSignal)) &ShtReader::getSignal)
-            .def("get_signal_name", &ShtReader::getSignalName)
+            .def("get_signal_name", [](ShtReader& m, int32_t numSignal) -> py::bytes {
+                return py::bytes(m.getSignalName(numSignal));
+            })
             .def("get_num_signals", &ShtReader::getNumSignals)
             .def("get_all_signals", &ShtReader::getAllSignals);
 
