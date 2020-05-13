@@ -31,7 +31,7 @@ Available CMake options:
 
 - `use_python` - specifying building Python wrapper or not
 - `use_debug` - specifying outputing debug messages or not
-- `-DPYTHON_EXECUTALBE=<path to Python executable>` - specifying for which Python version pyglobus is built (please see more details on [pybind11 docs](https://pybind11.readthedocs.io/en/stable/faq.html#cmake-doesn-t-detect-the-right-python-version))
+- `-DPYTHON_EXECUTABLE=<path to Python executable>` - specifying for which Python version pyglobus is built (please see more details on [pybind11 docs](https://pybind11.readthedocs.io/en/stable/faq.html#cmake-doesn-t-detect-the-right-python-version))
 
 ### Linux
 
